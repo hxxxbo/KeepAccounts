@@ -3,10 +3,11 @@ ori:
   month: 1
   from: 2
   inOrex: 3
+  counterparty: 7
+  goods: 8
   money: 9
-  logicInOrex: 10
-  finalMoney: 11
-
+  class: 10
+  tag: 11
 
 wx:
   header: 16
@@ -20,7 +21,6 @@ wx:
   goods: 3
   amount: 5
 
-
 zfb:
   header: 22
   footer: 0
@@ -32,3 +32,11 @@ zfb:
   counterparty: 2
   goods: 4
   amount: 6
+
+filePath:
+  root_dir: files
+  invalid: resources/invalid.txt
+  processed_file: resources/processed_files.txt
+  path_write: resources/2024年记账.xlsx
+  invalid_file: resources/无用数据.xlsx
+  tag: resources/tag.xlsx

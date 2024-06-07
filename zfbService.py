@@ -17,7 +17,8 @@ def read_data(path):  # 获取支付宝数据
     d.insert(o['from'], '来源', "支付宝", allow_duplicates=True)  # 添加支付宝来源标识
     d.iloc[:, o['money']] = d.iloc[:, o['money']].astype('float64')  # 数据类型更改
 
-    d.rename(columns={'交易状态': '支付状态', '商品说明': '商品', '交易分类': '类型', '收/付款方式': '支付方式'}, inplace=True)
+    d.rename(columns={'交易状态': '支付状态', '商品说明': '商品', '交易分类': '类型', '收/付款方式': '支付方式'},
+             inplace=True)
 
     filter_pattern = '|'.join(terms)
 
@@ -28,5 +29,5 @@ def read_data(path):  # 获取支付宝数据
 
     d = d.drop(rm.index)  # 删除'收/支'为'/'的行
     len2 = len(d)
-    print("成功读取 " + str(len2) + " 条「支付宝」账单数据\n")
+    print("成功读取 " + str(len2) + " 条「支付宝」账单数据" + str(path))
     return d, rm

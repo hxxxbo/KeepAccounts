@@ -27,5 +27,5 @@ def read_data(path):  # 获取微信数据
     rm = pd.concat([rm1, rm2])
     d = d.drop(rm.index)  # 删除'收/支'为'/'的行
     len1 = len(d)
-    print("成功读取 " + str(len1) + " 条「微信」账单数据\n")
+    print("成功读取 " + str(len1) + " 条「微信」账单数据" + str(path))
     return d, rm
