@@ -1,10 +1,11 @@
 import os
+import shutil
 
 import pandas as pd
 import openpyxl
-import wxService as wx
-import zfbService as zfb
+import readService as rs
 import common
+from datetime import datetime
 
 if __name__ == '__main__':
 
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     # 加载已处理文件集合
     processed_files = common.load_processed_files(processed_file_list_path)
 
-    path_write = f['path_write']
+    path_template = f['path_template']
 
     data_merge = pd.DataFrame()
     rm_merge = pd.DataFrame()
@@ -31,13 +32,14 @@ if __name__ == '__main__':
 
             # 如果文件尚未处理
             if file_path not in processed_files:
+                print(f"Processing file: {file_path}")
                 # 处理文件
                 if "alipay" in file_path:
                     processed_count += 1
-                    data, rm = zfb.read_data(file_path)  # 读数据
+                    data, rm = rs.read_zfb(file_path)  # 读数据
                 elif "微信" in file_path:
                     processed_count += 1
-                    data, rm = wx.read_data(file_path)  # 读数据
+                    data, rm = rs.read_wx(file_path)  # 读数据
                 else:
                     continue
 
@@ -59,25 +61,35 @@ if __name__ == '__main__':
     data_merge = common.classification(data_merge)
 
     merge_list = data_merge.values.tolist()  # 格式转换，DataFrame->List
-    workbook = openpyxl.load_workbook(path_write)  # openpyxl读取账本文件
+
+    # 保存文件
+    current_date = datetime.now().strftime('%Y%m%d_%H%M')
+    now_file_path = f'{f['out_dir']}/{current_date}_账单.xlsx'
+
+    # 复制模板文件到新文件路径
+    shutil.copyfile(path_template, now_file_path)
+
+    # 加载新创建的Excel文件
+    workbook = openpyxl.load_workbook(now_file_path)
     sheet = workbook['明细']
 
     maxRow = sheet.max_row  # 获取最大行
-
-    # for row in reversed(range(2, maxRow + 1)):
-    #     sheet.delete_rows(row)
-    #     maxRow = sheet.max_row  # 获取最大行
-    # print('\n「明细」 sheet 页原有 ' + str(maxRow) + ' 行数据，将在抹除后写入数据')
+    for row in reversed(range(2, maxRow + 1)):
+        sheet.delete_rows(row)
+        maxRow = sheet.max_row  # 获取最大行
+    print('\n「明细」 sheet 页原有 ' + str(maxRow) + ' 行数据，将在抹除后写入数据')
 
     for row in merge_list:
         sheet.append(row)  # openpyxl写文件
 
+    maxRow = sheet.max_row  # 获取最大行
+    print('\n「明细」 sheet 页新增 ' + str(maxRow) + ' 行数据')
+
     # 保存已各种文件
     common.save_processed_files(processed_file_list_path, processed_files)
-    with pd.ExcelWriter(f['invalid_file']) as writer:
+    with pd.ExcelWriter(f'{f['out_dir']}/{current_date}_无用数据.xlsx') as writer:
         rm_merge.to_excel(writer, sheet_name="无效数据", index=False)
-    workbook.save(path_write)
+    workbook.save(now_file_path)
 
-    print("\n成功将数据写入到 " + path_write)
-    print("\n运行成功！write successfully!")
+    print("\n成功将数据写入到 " + now_file_path + "运行成功！write successfully!")
     exit(0)

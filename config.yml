@@ -3,11 +3,15 @@ ori:
   month: 1
   from: 2
   inOrex: 3
+  payWay: 4
+  state: 5
+  type: 6
   counterparty: 7
   goods: 8
   money: 9
   class: 10
   tag: 11
+  remarks: 12
 
 wx:
   header: 16
@@ -35,8 +39,11 @@ zfb:
 
 filePath:
   root_dir: files
-  invalid: resources/invalid.txt
-  processed_file: resources/processed_files.txt
-  path_write: resources/2024年记账.xlsx
-  invalid_file: resources/无用数据.xlsx
+  out_dir: output
   tag: resources/tag.xlsx
+  invalid: resources/invalid.txt
+  path_template: resources/记账模版.xlsx
+  icost_template: resources/icost模板.xlsx
+  processed_file: resources/processed.txt
+
+

@@ -63,15 +63,21 @@ def strip_in_data(data):
 
 # 加入月份列和收支正负
 def preprocessing(data):
-    # 月份
     for index in range(len(data.iloc[:, o['time']])):
+        # 月份
         time = data.iloc[index, o['time']]
         data.iloc[index, o['month']] = time.month  # 访问月份属性的值，赋给这月份列
 
+        # 来源
+        if '2367' in str(data.iloc[index, o['payWay']]):
+            data.iloc[index, o['from']] = '中国银行2367'
+        elif '8672' in str(data.iloc[index, o['payWay']]):
+            data.iloc[index, o['from']] = '农业银行8672'
+
     # 逻辑收支
-    for index in range(len(data.iloc[:, o['inOrex']])):  # 遍历第3列的值，判断为收入，则改'逻辑1'为1
-        if data.iloc[index, o['inOrex']] == '支出':
-            data.iloc[index, o['money']] = -abs(data.iloc[index, o['money']])
+    # for index in range(len(data.iloc[:, o['inOrex']])):  # 遍历第3列的值，判断为收入，则改'逻辑1'为1
+    #     if data.iloc[index, o['inOrex']] == '支出':
+    #         data.iloc[index, o['money']] = -abs(data.iloc[index, o['money']])
 
     return data
 
@@ -94,11 +100,16 @@ def classification(data):
         counterparty_value = str(row.iloc[o['counterparty']])
         value = goods_value + counterparty_value
 
+        if_hit = False
         for category, items in categories.items():
             for item in items:
                 if item in value:
                     print(str(index) + "-" + str(category) + "-" + str(item) + "-" + str(value))
-                    data.iloc[index, o['class']] = str(category)
+                    data.iloc[index, o['class']] = str(category).replace(".1", "")
                     data.iloc[index, o['tag']] = str(item)
+                    if_hit = True
                     break
+            if if_hit:
+                break
+
     return data
