@@ -3,9 +3,20 @@ import pandas as pd
 import yaml
 import datetime
 
+
+# 使用 'with open' 语句打开文件 'config.yml'，并以只读模式 ('r') 读取文件内容
+# 'with' 语句确保文件在使用后会自动关闭，即使发生异常
 with open('config.yml', 'r') as f:
+    # 使用 yaml.safe_load 函数将文件内容解析为 Python 数据结构（通常是字典）
+    # safe_load 是安全的 YAML 解析方法，避免执行任意代码的风险
     config = yaml.safe_load(f)
+
+    # 从解析后的配置字典中获取键为 'ori' 的值，并将其赋值给变量 o
+    # 假设 'ori' 是配置文件中的一个配置项
     o = config['ori']
+
+    # 从解析后的配置字典中获取键为 'filePath' 的值，并将其赋值给变量 f
+    # 假设 'filePath' 是配置文件中的一个配置项，通常表示文件路径
     f = config['filePath']
 
 
@@ -73,6 +84,8 @@ def preprocessing(data):
             data.iloc[index, o['from']] = '中国银行2367'
         elif '8672' in str(data.iloc[index, o['payWay']]):
             data.iloc[index, o['from']] = '农业银行8672'
+        elif '4382' in str(data.iloc[index, o['payWay']]):
+            data.iloc[index, o['from']] = '招商银行4382'
 
     # 逻辑收支
     # for index in range(len(data.iloc[:, o['inOrex']])):  # 遍历第3列的值，判断为收入，则改'逻辑1'为1
